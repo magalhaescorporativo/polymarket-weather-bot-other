@@ -192,15 +192,15 @@ def fetch_temperature_markets() -> list[dict]:
     Raises on API failure — no fake fallback.
     """
     all_markets = []
-    batch = 500
-    for offset in range(0, 20000, batch):
+    batch = 100
+    for offset in range(0, 1000, batch):
         resp = requests.get(
             f"{GAMMA_API}/markets",
             params={
                 "active": "true",
                 "closed": "false",
-                "limit": batch,
-                "offset": offset,
+                "limit": 100,
+                "offset": 0,
                 "order": "endDate",
                 "ascending": "true",
             },
