@@ -193,7 +193,7 @@ def fetch_temperature_markets() -> list[dict]:
     """
     all_markets = []
     batch = 100
-    for offset in range(0, 1000, batch):
+    for offset in range(0, 20000, batch):
         resp = requests.get(
             f"{GAMMA_API}/markets",
             params={
