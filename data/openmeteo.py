@@ -73,6 +73,7 @@ def fetch_forecast_one_model(model_name: str, lat: float, lon: float,
     # Merge any model-specific extra params (e.g. HRRR needs models=hrrr)
     params.update(OPENMETEO_MODEL_PARAMS.get(model_name, {}))
     try:
+        print("REQUEST:", model_name, lat, lon, target_date)
         resp = _get_with_retry(url, params)
     except requests.HTTPError as e:
         # Explicit fallback chain for HRRR endpoint failures:
