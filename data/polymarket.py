@@ -193,7 +193,7 @@ def fetch_temperature_markets() -> list[dict]:
     """
     all_markets = []
     batch = 100
-    for offset in range(0, 20000, batch):
+    for offset in range(0, 10000, batch):
         resp = requests.get(
             f"{GAMMA_API}/markets",
             params={
@@ -206,6 +206,11 @@ def fetch_temperature_markets() -> list[dict]:
             },
             timeout=20,
         )
+
+        if resp.status_code == 422:
+            print(f"Parando busca no offset {offset}")
+            break
+            
         resp.raise_for_status()
         data = resp.json()
         if not data:
