@@ -134,6 +134,8 @@ def fetch_all_models(lat: float, lon: float, target_date: str,
     with ThreadPoolExecutor(max_workers=1) as pool:
         futures = {pool.submit(_fetch, m): m for m in models_to_fetch}
         for fut in as_completed(futures):
+            time.sleep(1)
+         
             model_name = futures[fut]
             try:
                 _, (temp, precip) = fut.result()
