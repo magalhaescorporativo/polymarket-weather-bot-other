@@ -145,7 +145,7 @@ def fetch_all_models(lat: float, lon: float, target_date: str,
                 errors[model_name] = str(e)
                 _warn_rate_limited(f"model-{model_name}", "  %s FAILED: %s", model_name, e)
 
-    if len(results) < 3:
+    if len(results) < 1:
         try:
             from ops_state import update_datasource_health
             update_datasource_health("openmeteo", False, f"{len(results)}/{len(models_to_fetch)} models")
