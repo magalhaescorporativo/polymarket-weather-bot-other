@@ -259,23 +259,31 @@ def fetch_temperature_markets() -> list[dict]:
                 len(temp_markets), skipped_thin, MIN_MARKET_VOLUME_USDC)
 
     # Parse each market
-    parsed = []
-    for m in temp_markets[:20]:
-        print("QUESTION:", m.get("question"))        
-        question = m.get("question", "")
-        market_id = m.get("conditionId") or m.get("id", "")
-        if not market_id or not question:
-            continue
+   parsed = []
 
-           parsed_q = parse_question(question)
-        if not parsed_q:
-            logger.debug("Could not parse: %s", question[:80])
-            continue
+# DEBUG: mostrar as primeiras perguntas encontradas
+for m in temp_markets[:20]:
+    print("QUESTION:", m.get("question"))
 
-        tokens = parse_clob_tokens(m.get("clobTokenIds", "[]"))
-        if not tokens:
-            logger.debug("No CLOB tokens for: %s", question[:80])
-            continue
+# Loop normal do bot
+for m in temp_markets:
+    question = m.get("question", "")
+    market_id = m.get("conditionId") or m.get("id", "")
+
+    if not market_id or not question:
+        continue
+
+    parsed_q = parse_question(question)
+
+    if not parsed_q:
+        logger.debug("Could not parse: %s", question[:80])
+        continue
+
+    tokens = parse_clob_tokens(m.get("clobTokenIds", "[]"))
+
+    if not tokens:
+        logger.debug("No CLOB tokens for: %s", question[:80])
+        continue
 
         # outcomePrices[0] = YES price, tokens[0] = YES token
         yes_token = tokens[0]
