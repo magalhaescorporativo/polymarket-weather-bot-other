@@ -131,7 +131,7 @@ def fetch_all_models(lat: float, lon: float, target_date: str,
     def _fetch(model_name):
         return model_name, fetch_forecast_one_model(model_name, lat, lon, target_date, timezone)
 
-    with ThreadPoolExecutor(max_workers=len(models_to_fetch)) as pool:
+    with ThreadPoolExecutor(max_workers=1) as pool:
         futures = {pool.submit(_fetch, m): m for m in models_to_fetch}
         for fut in as_completed(futures):
             model_name = futures[fut]
