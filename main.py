@@ -396,6 +396,23 @@ def cmd_scan(dry_run=False, live=False, opportunistic=False):
         td   = str(m.get("target_date", ""))
         if city and td:
             grouped[(city, td)].append(m)
+          
+# Escolha manual da cidade
+available_cities = sorted(set(city for (city, _) in grouped.keys()))
+
+print("\nCidades disponíveis:")
+for i, city_name in enumerate(available_cities, 1):
+    print(f"{i}. {city_name}")
+
+choice = input("\nEscolha a cidade (número): ").strip()
+
+try:
+    selected_city = available_cities[int(choice) - 1]
+except:
+    print("Cidade inválida.")
+    return
+
+print(f"\nCidade selecionada: {selected_city}\n")          
 
     trades_placed = 0
     traded_ids = set()
@@ -403,9 +420,13 @@ def cmd_scan(dry_run=False, live=False, opportunistic=False):
     today_str    = date.today().isoformat()
     tomorrow_str = (date.today() + timedelta(days=1)).isoformat()
 
-    for (city, target_date), bucket_markets in sorted(grouped.items()):
-        if city not in CITIES:
-            continue
+  for (city, target_date), bucket_markets in sorted(grouped.items()):
+
+    if city != selected_city:
+        continue
+
+    if city not in CITIES:
+        continue
         # Skip anything that is not TODAY
         if target_date != today_str:
             logger.debug("Skipping date %s %s (limit: TODAY only)", city, target_date)
