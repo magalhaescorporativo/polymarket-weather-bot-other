@@ -259,50 +259,50 @@ def fetch_temperature_markets() -> list[dict]:
                 len(temp_markets), skipped_thin, MIN_MARKET_VOLUME_USDC)
 
     # Parse each market
-   parsed = []
+    parsed = []
 
-# DEBUG: mostrar as primeiras perguntas encontradas
-for m in temp_markets[:20]:
-    print("QUESTION:", m.get("question"))
+    # DEBUG: mostrar as primeiras perguntas encontradas
+    for m in temp_markets[:20]:
+        print("QUESTION:", m.get("question"))
 
-# Loop normal do bot
-for m in temp_markets:
-    question = m.get("question", "")
-    market_id = m.get("conditionId") or m.get("id", "")
+    # Loop normal do bot
+    for m in temp_markets:
+        question = m.get("question", "")
+        market_id = m.get("conditionId") or m.get("id", "")
 
-    if not market_id or not question:
-        continue
+        if not market_id or not question:
+            continue
 
-    parsed_q = parse_question(question)
+        parsed_q = parse_question(question)
 
-    if not parsed_q:
-        logger.debug("Could not parse: %s", question[:80])
-        continue
+        if not parsed_q:
+            logger.debug("Could not parse: %s", question[:80])
+            continue
 
-    tokens = parse_clob_tokens(m.get("clobTokenIds", "[]"))
+        tokens = parse_clob_tokens(m.get("clobTokenIds", "[]"))
 
-    if not tokens:
-        logger.debug("No CLOB tokens for: %s", question[:80])
-        continue
+        if not tokens:
+            logger.debug("No CLOB tokens for: %s", question[:80])
+            continue
 
         # outcomePrices[0] = YES price, tokens[0] = YES token
         yes_token = tokens[0]
 
         parsed.append({
-            "market_id":       market_id,
-            "question":        question,
-            "city":            parsed_q["city"],
-            "target_date":     parsed_q["target_date"],
+            "market_id": market_id,
+            "question": question,
+            "city": parsed_q["city"],
+            "target_date": parsed_q["target_date"],
             "target_date_end": parsed_q.get("target_date_end"),
-            "market_type":     parsed_q.get("market_type", "daily"),
-            "bucket_lo":       parsed_q["bucket_lo"],
-            "bucket_hi":       parsed_q["bucket_hi"],
-            "bucket_unit":     parsed_q["bucket_unit"],
-            "clob_token_yes":  yes_token,
-            "outcome_prices":  m.get("outcomePrices", []),
-            "best_bid":        m.get("bestBid"),
-            "best_ask":        m.get("bestAsk"),
-            "last_trade":      m.get("lastTradePrice"),
+            "market_type": parsed_q.get("market_type", "daily"),
+            "bucket_lo": parsed_q["bucket_lo"],
+            "bucket_hi": parsed_q["bucket_hi"],
+            "bucket_unit": parsed_q["bucket_unit"],
+            "clob_token_yes": yes_token,
+            "outcome_prices": m.get("outcomePrices", []),
+            "best_bid": m.get("bestBid"),
+            "best_ask": m.get("bestAsk"),
+            "last_trade": m.get("lastTradePrice"),
         })
 
     logger.info("Successfully parsed %d temperature markets", len(parsed))
