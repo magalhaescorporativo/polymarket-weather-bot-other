@@ -200,7 +200,7 @@ def fetch_temperature_markets() -> list[dict]:
                 "active": "true",
                 "closed": "false",
                 "limit": 100,
-                "offset": 0,
+                "offset": offset,
                 "order": "endDate",
                 "ascending": "true",
             },
@@ -262,8 +262,8 @@ def fetch_temperature_markets() -> list[dict]:
     parsed = []
 
     # DEBUG: mostrar as primeiras perguntas encontradas
-    for m in temp_markets[:20]:
-        print("QUESTION:", m.get("question"))
+    for m in temp_markets[:50]:
+        print("TEMP MARKET:", m.get("question"))
 
     # Loop normal do bot
     for m in temp_markets:
