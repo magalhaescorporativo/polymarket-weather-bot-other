@@ -373,6 +373,7 @@ def cmd_scan(dry_run=False, live=False, opportunistic=False):
     print(f"  Fetching active markets from Polymarket...")
     try:
         markets = fetch_temperature_markets()
+        print("MARKETS RECEIVED =", len(markets))
     except Exception as e:
         logger.error("Market fetch FAILED: %s", e)
         print(f"  {R}Market fetch failed: {e}{RST}")
