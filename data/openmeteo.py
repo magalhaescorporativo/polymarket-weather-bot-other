@@ -132,17 +132,32 @@ def fetch_all_models(lat: float, lon: float, target_date: str,
     def _fetch(model_name):
         return model_name, fetch_forecast_one_model(model_name, lat, lon, target_date, timezone)
 
-    with ThreadPoolExecutor(max_workers=1) as pool:
-        futures = {pool.submit(_fetch, m): m for m in models_to_fetch}
-        for fut in as_completed(futures):
-            time.sleep(1)
-         
-            model_name = futures[fut]
-            try:
-                _, (temp, precip) = fut.result()
-                results[model_name] = {"temp": temp, "precip": precip}
-                logger.debug("  %s → %.1f°C (precip=%d%%)", model_name, temp, precip)
-            except Exception as e:
+    for model_name in models_to_fetch:
+    try:
+        time.sleep(2)
+
+        _, (temp, precip) = _fetch(model_name)
+
+        results[model_name] = {
+            "temp": temp,
+            "precip": precip
+        }
+
+        logger.debug(
+            "  %s → %.1f°C (precip=%d%%)",
+            model_name,
+            temp,
+            precip
+        )
+
+    except Exception as e:
+        errors[model_name] = str(e)
+        _warn_rate_limited(
+            f"model-{model_name}",
+            "  %s FAILED: %s",
+            model_name,
+            e
+        )
                 errors[model_name] = str(e)
                 _warn_rate_limited(f"model-{model_name}", "  %s FAILED: %s", model_name, e)
 
