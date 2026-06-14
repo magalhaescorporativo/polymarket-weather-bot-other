@@ -225,10 +225,10 @@ def fetch_temperature_markets() -> list[dict]:
     "degrees",
     "hottest",
     "rain",
-    "Highest",
+    "highest",
     "max",
     "min",
-    "Precipitation",
+    "precipitation",
     "minumum",
     "chuva"
     ]
