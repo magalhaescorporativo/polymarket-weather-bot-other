@@ -259,13 +259,14 @@ def fetch_temperature_markets() -> list[dict]:
 
     # Parse each market
     parsed = []
-    for m in temp_markets:
+    for m in temp_markets[:20]:
+        print("QUESTION:", m.get("question"))        
         question = m.get("question", "")
         market_id = m.get("conditionId") or m.get("id", "")
         if not market_id or not question:
             continue
 
-        parsed_q = parse_question(question)
+           parsed_q = parse_question(question)
         if not parsed_q:
             logger.debug("Could not parse: %s", question[:80])
             continue
