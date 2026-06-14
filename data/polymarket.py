@@ -303,7 +303,10 @@ def fetch_temperature_markets() -> list[dict]:
             "best_ask": m.get("bestAsk"),
             "last_trade": m.get("lastTradePrice"),
         })
-
+    
+    print("TEMP_MARKETS =", len(temp_markets))
+    print("PARSED_MARKETS =", len(parsed))
+    
     logger.info("Successfully parsed %d temperature markets", len(parsed))
     return parsed
 
