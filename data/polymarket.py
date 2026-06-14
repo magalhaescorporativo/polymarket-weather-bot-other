@@ -214,6 +214,7 @@ def fetch_temperature_markets() -> list[dict]:
         logger.debug("Fetched %d markets (offset=%d)", len(all_markets), offset)
 
     logger.info("Total active markets fetched: %d", len(all_markets))
+    print("DEBUG TEST 123456")
 
     # Filter to temperature/weather markets with sufficient liquidity
     temp_kw = [
