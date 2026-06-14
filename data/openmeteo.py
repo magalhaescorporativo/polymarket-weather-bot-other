@@ -160,21 +160,22 @@ def fetch_all_models(lat: float, lon: float, target_date: str,
                 e
             )
 
-    if len(results) < 1:
-        try:
-            from ops_state import update_datasource_health
-            update_datasource_health(
-                "openmeteo",
-                False,
-                f"{len(results)}/{len(models_to_fetch)} models"
-            )
-        except Exception:
-            pass
+if len(results) < 1:
+    try:
+        from ops_state import update_datasource_health
+        update_datasource_health(
+            "openmeteo",
+            False,
+            f"{len(results)}/{len(models_to_fetch)} models"
+        )
+    except Exception:
+        pass
 
-        raise RuntimeError(
+    raise RuntimeError(
         f"Only {len(results)}/{len(models_to_fetch)} models succeeded for "
         f"{lat},{lon} {target_date}. Errors: {errors}"
     )
+
 else:
     try:
         from ops_state import update_datasource_health
@@ -185,7 +186,6 @@ else:
         )
     except Exception:
         pass
-
     # ECMWF free tier only provides ~7 days of forecast. For near-term dates (≤7 days)
     # where ECMWF should be available, its absence is a real data gap — flag it prominently
     # since ECMWF carries the highest ensemble weight (1.8×).
