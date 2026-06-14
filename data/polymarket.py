@@ -223,20 +223,14 @@ def fetch_temperature_markets() -> list[dict]:
 
     # Filter to temperature/weather markets with sufficient liquidity
     temp_kw = [
-    "°c",
-    "°f",
-    "temperature",
+     "temperature",
     "weather",
-    "clima",
-    "degrees",
-    "hottest",
+    "°f",
+    "°c",
     "rain",
-    "highest",
-    "max",
-    "min",
     "precipitation",
-    "minumum",
-    "chuva"
+    "hottest",
+    "coldest"
     ]
     temp_markets = []
     skipped_thin = 0
