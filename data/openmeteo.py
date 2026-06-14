@@ -134,49 +134,57 @@ def fetch_all_models(lat: float, lon: float, target_date: str,
 
     for model_name in models_to_fetch:
         try:
-           time.sleep(2)
+            time.sleep(2)
 
-        _, (temp, precip) = _fetch(model_name)
+            _, (temp, precip) = _fetch(model_name)
 
-        results[model_name] = {
-            "temp": temp,
-            "precip": precip
-        }
+            results[model_name] = {
+                "temp": temp,
+                "precip": precip
+            }
 
-        logger.debug(
-            "  %s → %.1f°C (precip=%d%%)",
-            model_name,
-            temp,
-            precip
-        )
+            logger.debug(
+                "  %s → %.1f°C (precip=%d%%)",
+                model_name,
+                temp,
+                precip
+            )
 
-    except Exception as e:
-        errors[model_name] = str(e)
-        _warn_rate_limited(
-            f"model-{model_name}",
-            "  %s FAILED: %s",
-            model_name,
-            e
-        )
-                errors[model_name] = str(e)
-                _warn_rate_limited(f"model-{model_name}", "  %s FAILED: %s", model_name, e)
+        except Exception as e:
+            errors[model_name] = str(e)
+
+            _warn_rate_limited(
+                f"model-{model_name}",
+                "  %s FAILED: %s",
+                model_name,
+                e
+            )
 
     if len(results) < 1:
         try:
             from ops_state import update_datasource_health
-            update_datasource_health("openmeteo", False, f"{len(results)}/{len(models_to_fetch)} models")
+            update_datasource_health(
+                "openmeteo",
+                False,
+                f"{len(results)}/{len(models_to_fetch)} models"
+            )
         except Exception:
             pass
+
         raise RuntimeError(
-            f"Only {len(results)}/{len(models_to_fetch)} models succeeded for "
-            f"{lat},{lon} {target_date}. Errors: {errors}"
+        f"Only {len(results)}/{len(models_to_fetch)} models succeeded for "
+        f"{lat},{lon} {target_date}. Errors: {errors}"
+    )
+else:
+    try:
+        from ops_state import update_datasource_health
+        update_datasource_health(
+            "openmeteo",
+            True,
+            f"{len(results)}/{len(models_to_fetch)} models"
         )
-    else:
-        try:
-            from ops_state import update_datasource_health
-            update_datasource_health("openmeteo", True, f"{len(results)}/{len(models_to_fetch)} models")
-        except Exception:
-            pass
+    except Exception:
+        pass
 
     # ECMWF free tier only provides ~7 days of forecast. For near-term dates (≤7 days)
     # where ECMWF should be available, its absence is a real data gap — flag it prominently
