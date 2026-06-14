@@ -160,52 +160,57 @@ def fetch_all_models(lat: float, lon: float, target_date: str,
                 e
             )
 
-if len(results) < 1:
-    try:
-        from ops_state import update_datasource_health
-        update_datasource_health(
-            "openmeteo",
-            False,
-            f"{len(results)}/{len(models_to_fetch)} models"
-        )
-    except Exception:
-        pass
-
-    raise RuntimeError(
-        f"Only {len(results)}/{len(models_to_fetch)} models succeeded for "
-        f"{lat},{lon} {target_date}. Errors: {errors}"
-    )
-
-else:
-    try:
-        from ops_state import update_datasource_health
-        update_datasource_health(
-            "openmeteo",
-            True,
-            f"{len(results)}/{len(models_to_fetch)} models"
-        )
-    except Exception:
-        pass
-    # ECMWF free tier only provides ~7 days of forecast. For near-term dates (≤7 days)
-    # where ECMWF should be available, its absence is a real data gap — flag it prominently
-    # since ECMWF carries the highest ensemble weight (1.8×).
-    if "ecmwf" not in results:
+    if len(results) < 1:
         try:
-            days_ahead = (date.fromisoformat(target_date) - date.today()).days
-        except (ValueError, TypeError):
-            days_ahead = 99
-        if days_ahead <= 7:
-            logger.warning(
-                "ECMWF (highest-weight model) unavailable for %s (%d days out) — "
-                "ensemble running on %d/5 models. Error: %s",
-                target_date, days_ahead, len(results), errors.get("ecmwf", "unknown")
+            from ops_state import update_datasource_health
+            update_datasource_health(
+                "openmeteo",
+                False,
+                f"{len(results)}/{len(models_to_fetch)} models"
             )
-        else:
-            logger.debug("ECMWF unavailable for %s (%d days out, beyond free-tier horizon)",
-                         target_date, days_ahead)
+        except Exception:
+            pass
+
+        raise RuntimeError(
+            f"Only {len(results)}/{len(models_to_fetch)} models succeeded for "
+            f"{lat},{lon} {target_date}. Errors: {errors}"
+        )
+
+    else:
+        try:
+            from ops_state import update_datasource_health
+            update_datasource_health(
+                "openmeteo",
+                True,
+                f"{len(results)}/{len(models_to_fetch)} models"
+            )
+        except Exception:
+            pass
+
+        # ECMWF free tier only provides ~7 days of forecast.
+        if "ecmwf" not in results:
+            try:
+                days_ahead = (date.fromisoformat(target_date) - date.today()).days
+            except (ValueError, TypeError):
+                days_ahead = 99
+
+            if days_ahead <= 7:
+                logger.warning(
+                    "ECMWF (highest-weight model) unavailable for %s (%d days out) — "
+                    "ensemble running on %d/5 models. Error: %s",
+                    target_date,
+                    days_ahead,
+                    len(results),
+                    errors.get("ecmwf", "unknown")
+                )
+            else:
+                logger.debug(
+                    "ECMWF unavailable for %s (%d days out, beyond free-tier horizon)",
+                    target_date,
+                    days_ahead
+                )
 
     return results
-
 
 def fetch_historical_actuals(lat: float, lon: float,
                               start_date: str, end_date: str,
