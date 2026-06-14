@@ -133,8 +133,8 @@ def fetch_all_models(lat: float, lon: float, target_date: str,
         return model_name, fetch_forecast_one_model(model_name, lat, lon, target_date, timezone)
 
     for model_name in models_to_fetch:
-    try:
-        time.sleep(2)
+        try:
+           time.sleep(2)
 
         _, (temp, precip) = _fetch(model_name)
 
