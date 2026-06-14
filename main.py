@@ -387,16 +387,6 @@ def cmd_scan(dry_run=False, live=False, opportunistic=False):
             return
         db.set_kv("last_opportunistic_scan_ts", str(__import__("time").time()))
 
-    # Group by (city, target_date) for ensemble building
-    from collections import defaultdict
-    import re
-    grouped = defaultdict(list)
-    for m in markets:
-        city = m.get("city", "")
-        td   = str(m.get("target_date", ""))
-        if city and td:
-            grouped[(city, td)].append(m)
-          
 # Escolha manual da cidade
 available_cities = sorted(set(city for (city, _) in grouped.keys()))
 
@@ -412,16 +402,22 @@ except:
     print("Cidade inválida.")
     return
 
-print(f"\nCidade selecionada: {selected_city}\n")          
+print(f"\nCidade selecionada: {selected_city}\n")
 
-    trades_placed = 0
-    traded_ids = set()
+# mantém somente a cidade escolhida
+grouped = {
+    k: v
+    for k, v in grouped.items()
+    if k[0] == selected_city
+}
 
-    today_str    = date.today().isoformat()
-    tomorrow_str = (date.today() + timedelta(days=1)).isoformat()
+trades_placed = 0
+traded_ids = set()
 
-  for (city, target_date), bucket_markets in sorted(grouped.items()):
+today_str = date.today().isoformat()
+tomorrow_str = (date.today() + timedelta(days=1)).isoformat()
 
+for (city, target_date), bucket_markets in sorted(grouped.items()):
     if city != selected_city:
         continue
 
